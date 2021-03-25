@@ -1,7 +1,7 @@
 // import logo from './logo.svg';
 import { useState } from "react";
 import "./App.css";
-import {PROMO_CODES} from "./mockData.js";
+import { PROMO_CODES } from "./mockData.js";
 
 const PRODUCTS = [
   {
@@ -30,7 +30,6 @@ const PRODUCTS = [
   },
 ];
 
-
 function App() {
   // const [totalItems, setTotalItems] = useState(0);
 
@@ -40,60 +39,54 @@ function App() {
   // const setCount = state[1];
 
   const [products, setProducts] = useState(PRODUCTS);
-  const [codes, setCodes] = useState(PROMO_CODES);
+  const [userInput, setUserInput] = useState('');
+
 
   // UPDATE TOTAL QUANTITY
 
-  let totalItems = products.reduce((total, product) => (total += product.quantity), 0 );
+  let totalItems = products.reduce(
+    (total, product) => (total += product.quantity),
+    0
+  );
 
   // UPDATE TOTAL PRICE
 
-  let subTotal = products.reduce((total, product) => (total += product.quantity*product.price), 0 );
+  let subTotal = products.reduce(
+    (total, product) => (total += product.quantity * product.price),
+    0
+  );
+  
+  const[discount, setDiscount] = useState(0);
 
   let tax = subTotal * 0.1;
 
-  // let discount;
-  
-  let totalPrice = subTotal + tax;
- 
+  let totalPrice = subTotal + tax - discount;
+
   // UPDATE TOTAL PRICE WHEN PROMO CODE IS USED
-
   
+  function updateTotalPrice(event) {
+    const newUserInput = event.target.value;
+    setUserInput(newUserInput);
+  }
 
-  function updateTotalPrice(event){
-    
-    const inputCode = event.target.value;
-    const newCodes = [...codes];
-    let index = newCodes.findIndex((code) => code.text === inputCode);
+  function checkPromo() {
+    console.log(userInput);
+    const newCodes = [...PROMO_CODES];
+    let index = newCodes.findIndex((code) => code.text === userInput);
     if(index > -1){
-        console.log(newCodes[index]);
-        console.log(newCodes[index].text);
-        let discount = newCodes[index].discountPercent;
-        console.log(discount);
-        totalPrice = subTotal + tax - discount;
+      setDiscount(newCodes[index].discountPercent);
     }
-    
-    setCodes(inputCode);
-    
   }
 
-  function checkPromo(){
-    let inputValue = "";
-    const newCodes = [...codes];
-    let inputCode = document.getElementById("promo-code").value;
-    for(let i = 0; i< newCodes.length; i++){
-      if(inputCode === newCodes[i].text){
-        let discount = newCodes[i].discountPercent;
-      }
-    }
-  }
- 
   // REMOVE PRODUCTS
 
   function removeProduct(productId) {
-    console.log(productId);
-    const newProductList = products.filter(product => productId !== product.id );
-    setProducts(newProductList);
+    if(window.confirm("Bạn có muốn xóa sản phẩm không?")){
+      const newProductList = products.filter(
+        (product) => productId !== product.id
+      );
+      setProducts(newProductList);
+    }
   }
 
   // const handleClick3 = (product) => {
@@ -101,18 +94,18 @@ function App() {
   // };
 
   // UPDATE PRODUCTS QUANTITY
-  function updateQuantity(event, productID){
+  function updateQuantity(event, productID) {
     const inputValue = event.target.value;
     const newProducts = [...products];
     let index = newProducts.findIndex((product) => product.id === productID);
-    if(index > -1){
+    if (index > -1) {
       newProducts[index].quantity = Number(inputValue);
     }
-   
+
     setProducts(newProducts);
   }
 
-  function refreshPage(){
+  function refreshPage() {
     window.location.reload(false);
   }
 
@@ -141,7 +134,7 @@ function App() {
             className="quantity"
             step={1}
             value={product.quantity}
-            onChange = {(event) => updateQuantity(event, product.id)}
+            onChange={(event) => updateQuantity(event, product.id)}
           />
         </div>
         <div className="remove">
@@ -165,7 +158,6 @@ function App() {
     </li>
   ));
 
-
   return (
     <main>
       <header className="container">
@@ -178,45 +170,55 @@ function App() {
       </header>
 
       <section className="container">
-      {productList.length > 0 ? <ul className="products">{productList}</ul> : <div className="products">
-        <h1>Không có sản phẩm nào trong giỏ</h1>
-        <button type="button" onClick={refreshPage}>Quay lại mua hàng</button>
-      </div>}
-      
-
+        {productList.length > 0 ? (
+          <ul className="products">{productList}</ul>
+        ) : (
+          <div className="products">
+            <h1>Không có sản phẩm nào trong giỏ</h1>
+            <button type="button" onClick={refreshPage}>
+              Quay lại mua hàng
+            </button>
+          </div>
+        )}
       </section>
 
-      {productList.length > 0 ? 
-      <section className="container">
-        <div className="promotion">
-          <label htmlFor="promo-code">Have A Promo Code?</label>
-          <input type="text" id="promo-code" onChange = {(event) => updateTotalPrice(event)}/> <button type="button" onclick = {checkPromo}/>
-        </div>
-        <div className="summary">
-          <ul>
-            <li>
-              Subtotal <span id="sub-price">${subTotal}</span>
-            </li>
-            <li>
-              Tax <span id="tax">${tax}</span>
-            </li>
-            <li>
-              Discount <span id="discount">- ${discount}</span>
-            </li>
-            <li className="total" id="total-price"> 
-              Total <span>${totalPrice}</span>
-            </li>
-          </ul>
-        </div>
-        <div className="checkout">
-          <button type="button">Check Out</button>
-        </div>
-      </section>
-      : <div></div>}
+      {productList.length > 0 ? (
+        <section className="container">
+          <div className="promotion">
+            <label htmlFor="promo-code">Have A Promo Code?</label>
+            <input
+              type="text"
+              id="promo-code" 
+              value={userInput}
+              onChange={(event) => updateTotalPrice(event)}
+            />{" "}
+            <button type="button" onClick={checkPromo} />
+          </div>
+          <div className="summary">
+            <ul>
+              <li>
+                Subtotal <span id="sub-price">${subTotal.toFixed(2)}</span>
+              </li>
+              <li>
+                Tax <span id="tax">${tax.toFixed(2)}</span>
+              </li>
+              <li>
+                Discount <span id="discount">- ${discount.toFixed(2)}</span>
+              </li>
+              <li className="total" id="total-price">
+                Total <span>${totalPrice.toFixed(2)}</span>
+              </li>
+            </ul>
+          </div>
+          <div className="checkout">
+            <button type="button">Check Out</button>
+          </div>
+        </section>
+      ) : (
+        <div></div>
+      )}
     </main>
   );
 }
 
 export default App;
-
-
