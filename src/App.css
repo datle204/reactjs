@@ -248,6 +248,34 @@ header .count {
 }
 
 /* --- SUMMARY --- */
+
+/* MODAL */
+
+#modal{
+  width: 500px;
+  height: 200px;
+  background-color: #282c34;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  text-align: center;
+  border: 1px solid red;
+}
+
+#modal h1{
+  font-size: 24px;
+  color: white;
+}
+
+#modal button{
+  margin-right: 20px;
+}
+
+/* END MODAL */
+
 .promotion,
 .summary,
 .checkout {

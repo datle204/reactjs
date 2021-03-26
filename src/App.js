@@ -4,6 +4,7 @@ import "./App.css";
 import Header from "./component/Header";
 import Footer from "./component/Footer";
 import Body from "./component/Body";
+import Modal from "./component/Modal";
 import { PROMO_CODES } from "./mockData.js";
 
 const PRODUCTS = [
@@ -82,13 +83,27 @@ function App() {
 
   // REMOVE PRODUCTS
 
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const [buttonId, setButtonId] = useState();
+
   function removeProduct(productId) {
-    if (window.confirm("Bạn có muốn xóa sản phẩm không?")) {
-      const newProductList = products.filter(
-        (product) => productId !== product.id
-      );
-      setProducts(newProductList);
-    }
+    setButtonId(productId)
+    setModalVisible(true)
+  }
+
+  function confirmRemove(){
+
+    const newProductList = products.filter(
+      (product) => product.id !== buttonId
+    );
+
+    setProducts(newProductList);
+    setModalVisible(false);
+  }
+
+  function cancelRemove(){
+    setModalVisible(false);
   }
 
   // UPDATE PRODUCTS QUANTITY
@@ -99,18 +114,13 @@ function App() {
     if (index > -1) {
       newProducts[index].quantity = Number(inputValue);
     }
-
     setProducts(newProducts);
   }
 
-  // function refreshPage() {
-  //   window.location.reload(false);
-  // }
 
   return (
     <main>
       <Header totalItems={totalItems} />
-
       <Body
         products={products}
         setProducts={setProducts}
@@ -118,7 +128,6 @@ function App() {
         removeProduct={removeProduct}
         updateQuantity={updateQuantity}
       />
-
       <Footer
         products={products}
         userInput={userInput}
@@ -128,7 +137,16 @@ function App() {
         tax={tax}
         discount={discount}
         totalPrice={totalPrice}
+        setModalVisible={setModalVisible}
+        modalVisible={modalVisible}
       />
+      {
+        modalVisible && <Modal message="Bạn có muốn xóa sản phẩm này không?" 
+        confirmRemove={confirmRemove}
+        cancelRemove={cancelRemove}
+        />
+      }
+
     </main>
   );
 }

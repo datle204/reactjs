@@ -1,4 +1,4 @@
-function Body({ products, setProducts, PRODUCTS, removeProduct, updateQuantity }) {
+function Body({ products, setProducts, PRODUCTS, removeProduct, updateQuantity}) {
     const productList = products.map((product) => (
         <li className="row" key={product.id}>
           <div className="col left">
